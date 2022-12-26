@@ -1,0 +1,83 @@
+body {
+    background: linear-gradient(90deg, rgba(61, 21, 77, 1) 0%, rgba(50, 5, 65, 1) 48%, rgba(52, 15, 50, 1) 100%);
+    padding: 0 1.5%;
+    display: grid;
+    grid-template-columns: 55% 30%;
+}
+
+
+
+.input {
+    background: rgb(242, 240, 240);
+    width: 100%;
+    height: 290px;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    border-radius: 10px;
+    margin-left: 6%;
+}
+
+.input select {
+
+    margin-top: 50px;
+    margin-right: 60px;
+}
+
+.images {
+    display: flex;
+    flex-direction: row;
+}
+
+.input .images img {
+    width: 290px;
+    height: 290px;
+
+    margin-right: 5%;
+
+}
+
+.buttons {
+    width: 12%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 80px;
+    margin-left: 12%;
+
+}
+
+.buttons input {
+    margin-left: 100px;
+}
+
+.select_menu {
+    margin-left: 80px;
+}
+
+.upload_btn {
+    margin-bottom: 40px;
+    margin-left: 80px;
+}
+
+
+.output {
+    margin-left: 50%;
+    transform: translateY(150px);
+    background: rgb(242, 240, 240);
+    width: 70%;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    padding-top: 0px;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.output img {
+    width: 100%;
+    height: 80%;
+}

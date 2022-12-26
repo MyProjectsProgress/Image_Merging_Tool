@@ -4,9 +4,61 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haha</title>
+
+    <!-- Css -->
+    <link rel="stylesheet" href="../static/css/index.css">
+
+    <title>Image Processing</title>
 </head>
+
+
+
 <body>
-    <h1>Teez Emaaaad</h1>
+
+    <div class="input_images">
+
+        <div class="input">
+            <div class="images">
+                <img id="display1">
+                <img src="../static/img/coffee2.JPG" alt="">
+            </div>
+
+            <div class="buttons">
+                <form id="upload-file" method="post" enctype="multipart/form-data">
+                <input id="file1" type="file" name="file"/>
+                </form>
+                <select name="" id="">
+                    <option value="">Magnitude</option>
+                    <option value="">Phase</option>
+                </select>            
+            </div>
+        </div>
+
+        <div class="input">
+            <div class="images">
+                <img id="display2">
+                <img src="../static/img/coffee2.JPG" alt="">
+            </div>
+            
+            <div class="buttons">
+                <form id="upload-file2" method="post" enctype="multipart/form-data">
+                    <input id="file2" type="file" name="file"/>
+                    </form>        
+                            <select name="" id="">
+                    <option value="">Magnitude</option>
+                    <option value="">Phase</option>
+                </select>
+            </div>
+        </div>
+
+    </div>    
+
+    <div class="output">
+        <h3>Output Image</h3>
+        <img src="../static/img/coffee.png" alt="">
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    <script src="../static/js/index.js"></script>
 </body>
 </html>
