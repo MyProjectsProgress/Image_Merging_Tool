@@ -4,9 +4,59 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haha</title>
+    <title>HAHA</title>
 </head>
 <body>
-    <h1>Teez Emaaaad</h1>
+    <textarea id="firstbox">Edit Me</textarea>
+    <button onclick="performPost()">Perform POST!</button>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
+    <script>
+        tinymce.init({
+            height: 400,
+            setup: function(ed) {
+                
+                var fileInput = $('<input id="tinymce-uploader" type="file" name="pic" accept="image/*" style="display:none">');
+                $(ed.getElement()).parent().append(fileInput);
+                
+                fileInput.on("change",function(){           
+                    var file = this.files[0];
+                    var reader = new FileReader();          
+                    var formData = new FormData();
+                    var files = file;
+                    formData.append("file",files);
+                    formData.append('filetype', 'image');               
+                    jQuery.ajax({
+                        url: "/create_file",
+                        type: "post",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        async: false,
+                        success: function(response){
+                            var fileName = response;
+                            if(fileName) {
+                                ed.insertContent('<img src="/static/uploads/'+fileName+'"/>');
+                            }
+                        }
+                    });     
+                    reader.readAsDataURL(file);  
+                });     
+                 
+                ed.addButton('image_upload', {
+                    tooltip: 'Upload Image',
+                    icon: 'image',
+                    onclick: function () {
+                        fileInput.trigger('click');
+                    }
+                });
+            }
+        });
+        </script>
 </body>
+
+
+
 </html>
+
