@@ -1,11 +1,9 @@
 body {
     background: linear-gradient(90deg, rgba(61, 21, 77, 1) 0%, rgba(50, 5, 65, 1) 48%, rgba(52, 15, 50, 1) 100%);
-    padding: 0 1.5%;
+    padding: 0 20px;
     display: grid;
     grid-template-columns: 55% 30%;
 }
-
-
 
 .input {
     background: rgb(242, 240, 240);
@@ -16,11 +14,10 @@ body {
     flex-direction: row;
     padding: 15px;
     border-radius: 10px;
-    margin-left: 6%;
+    margin-left: 20px;
 }
 
 .input select {
-
     margin-top: 50px;
     margin-right: 60px;
 }
@@ -30,12 +27,23 @@ body {
     flex-direction: row;
 }
 
+.canv_image{
+    background-image: url("../img/coffee2.JPG");
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+}
+
 .input .images img {
     width: 290px;
     height: 290px;
 
-    margin-right: 5%;
+    margin-right: 20px;
 
+}
+
+.display{
+    min-width: 290px;
 }
 
 .buttons {
@@ -45,20 +53,27 @@ body {
     align-items: center;
     margin-top: 80px;
     margin-left: 12%;
-
 }
 
-.buttons input {
-    margin-left: 100px;
+
+.shape_btn{
+    margin-top: 30px;
+    transform: translateX(-25px);
+}
+
+.shape_btn input{
+    margin-bottom: 10px;
 }
 
 .select_menu {
-    margin-left: 80px;
+    /* margin-left: 80px; */
+    transform: translateY(-5px);
 }
 
 .upload_btn {
-    margin-bottom: 40px;
-    margin-left: 80px;
+    transform: translateX(-30px);
+    width: 92px;
+    margin-bottom: -40px;
 }
 
 
