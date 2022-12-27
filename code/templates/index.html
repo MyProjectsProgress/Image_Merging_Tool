@@ -19,35 +19,44 @@
 
         <div class="input">
             <div class="images">
-                <img id="display1">
-                <img src="../static/img/coffee2.JPG" alt="">
+                <img id="display1" class="display">
+                <canvas id="canvas" class="canv_image"></canvas>
+
             </div>
 
             <div class="buttons">
                 <form id="upload-file" method="post" enctype="multipart/form-data">
-                <input id="file1" type="file" name="file"/>
+                <input id="file1" type="file" name="file" class="upload_btn"/>
                 </form>
-                <select name="" id="">
+                <select name="" id="" class="select_menu">
                     <option value="">Magnitude</option>
                     <option value="">Phase</option>
-                </select>            
+                </select>
+                <div class="shape_btn">
+                    <input type="radio" name="shape" id="" value="" checked>Rectangle
+                    <input type="radio" name="shape" id="" value="">Ellipse
+                </div>
             </div>
         </div>
 
         <div class="input">
             <div class="images">
-                <img id="display2">
-                <img src="../static/img/coffee2.JPG" alt="">
+                <img id="display2" class="display">
+                <canvas id="canvas2" class="canv_image"></canvas>
             </div>
             
             <div class="buttons">
                 <form id="upload-file2" method="post" enctype="multipart/form-data">
-                    <input id="file2" type="file" name="file"/>
+                    <input id="file2" type="file" name="file" class="upload_btn"/>
                     </form>        
-                            <select name="" id="">
+                <select name="" id="" class="select_menu">
                     <option value="">Magnitude</option>
                     <option value="">Phase</option>
                 </select>
+                <div class="shape_btn">
+                    <input type="radio" name="shape2" id="" value="" checked>Rectangle
+                    <input type="radio" name="shape2" id="" value="">Ellipse
+                </div>
             </div>
         </div>
 
