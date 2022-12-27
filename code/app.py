@@ -41,13 +41,13 @@ def plotFunc(x, s):
     plt.imshow(x, cmap='gray')
     if(s == "1"):
 
-        plt.savefig('static/uploads/1.png')
+        plt.savefig('static/uploads/1.png', bbox_inches='tight')
 
     elif(s == "2"):
 
-        plt.savefig('static/uploads/2.png')
+        plt.savefig('static/uploads/2.png', bbox_inches='tight')
     elif(s == "output"):
-        plt.savefig('static/uploads/output.png')
+        plt.savefig('static/uploads/output.png', bbox_inches='tight')
 
 
 def combine(mag, phase):

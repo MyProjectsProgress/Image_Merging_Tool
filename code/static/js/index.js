@@ -77,7 +77,6 @@ document.getElementById("file1").onchange = function () {
         processData: false,
         async: true,
         success: function (data) {
-            alert("suiiii")
 
         }
     });
