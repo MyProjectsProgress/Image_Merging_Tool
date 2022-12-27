@@ -14,6 +14,42 @@ file.addEventListener("change", function () {
     })
     reader.readAsDataURL(this.files[0]);
 })
+var select1_val;
+var select2_val;
+document.getElementById("select1").onchange = function () {
+    select1_val = document.getElementById("select1").value;
+    $.ajax({
+        url: 'http://127.0.0.1:5000/selected-items',
+        type: 'POST',
+        data: {
+            'select1': select1_val //  to the GET parameters
+        },
+        dataType: 'json',
+
+        success: function (response) {
+
+        }
+    })
+
+};
+
+document.getElementById("select2").onchange = function () {
+    select2_val = document.getElementById("select2").value;
+    $.ajax({
+        url: 'http://127.0.0.1:5000/selected-items',
+        type: 'POST',
+        data: {
+            'select2': select2_val //  to the GET parameters
+        },
+        dataType: 'json',
+
+        success: function (response) {
+
+        }
+    })
+
+
+};
 document.getElementById("file1").onchange = function () {
     // document.getElementById("upload-file").submit();
     var form_data = new FormData($('#upload-file')[0]);
@@ -27,7 +63,6 @@ document.getElementById("file1").onchange = function () {
         processData: false,
         async: true,
         success: function (data) {
-            console.log("suii")
         }
     });
 };
@@ -50,3 +85,5 @@ document.getElementById("file2").onchange = function () {
         }
     });
 };
+
+

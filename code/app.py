@@ -1,8 +1,134 @@
 import os
 from flask import Flask, request, render_template
-
+import cv2 as cv
+import numpy as np
+from matplotlib import pyplot as plt
+import json
 
 app = Flask(__name__)
+
+
+def fourierFunc(img):
+    fourier = np.fft.fft2(img)
+    fourierShift = np.fft.fftshift(fourier)
+    return fourier, fourierShift
+
+
+def magnitudeSpectrum(fourierShift):
+    return 20*np.log(np.abs(fourierShift))
+
+
+def phaseFunc(fourier):
+    phase = np.angle(fourier)
+    return phase
+
+
+def resizeFunc(img1, img2):
+    newImageShape = img1.shape
+    newImageShape = (newImageShape[1], newImageShape[0])
+    img2 = cv.resize(img2, newImageShape)
+    return img2
+
+
+def magnitudeFunc(fourier):
+    return np.abs(fourier)
+
+
+def plotFunc(x, s):
+    plt.figure(figsize=(8, 6), dpi=80)
+    plt.imshow(x, cmap='gray')
+    plt.title(s), plt.xticks([]), plt.yticks([])
+    if(s == "Mag1"):
+
+        plt.savefig('static/uploads/Mag1.png')
+    elif(s == "Mag2"):
+
+        plt.savefig('static/uploads/Mag2.png')
+    elif(s == "phase1"):
+
+        plt.savefig('static/uploads/phase1.png')
+    elif(s == "phase2"):
+
+        plt.savefig('static/uploads/phase2.png')
+    elif(s == "output"):
+        plt.savefig('static/uploads/output.png')
+
+
+def combine(mag, phase):
+    combined = np.multiply(mag, np.exp(1j * phase))
+    mixInverse = np.real(np.fft.ifft2(combined))
+
+    return mixInverse
+
+
+def processing(path1, path2, mode):
+    # read & resize
+
+    img1 = cv.imread(path1, 0)
+    img2 = cv.imread(path2, 0)
+    img2 = resizeFunc(img1, img2)
+    # IMAGE ONE FOURIER
+    fourier1, fourierShift1 = fourierFunc(img1)
+
+   # IMAGE TWO FOURIER
+    fourier2, fourierShift2 = fourierFunc(img1)
+
+    mag1 = np.ones(img1.shape)
+    mag2 = np.ones(img2.shape)
+    phase1 = np.zeros(img1.shape)
+    phase2 = np.zeros(img2.shape)
+
+    if(mode == "Mag1-Phase2"):
+        mag1 = magnitudeFunc(fourier1)
+        mag_spectrum = magnitudeSpectrum(fourierShift1)
+        phase2 = phaseFunc(fourier2)
+        plotFunc(mag_spectrum, "Mag1")
+        print("a7a")
+
+        plotFunc(phase2, "phase2")
+        print("a7a2")
+
+        outputImage = combine(mag1, phase2)
+        plotFunc(outputImage, "output")
+        print("a7a3")
+
+    elif(mode == "Phase1-Mag2"):
+        mag2 = magnitudeFunc(fourier2)
+        phase1 = phaseFunc(fourier1)
+        plotFunc(mag2, "Mag2")
+        plotFunc(phase1, "phase1")
+        outputImage = combine(mag2, phase1)
+        plotFunc(outputImage, "output")
+
+    elif(mode == "Phase1-Uni2"):
+        phase1 = phaseFunc(fourier1)
+        plotFunc(mag2, "Mag2")
+        plotFunc(phase1, "phase1")
+        outputImage = combine(mag2, phase1)
+        plotFunc(outputImage, "output")
+
+    elif(mode == "Uni1-Mag2"):
+        mag2 = magnitudeFunc(fourier2)
+        plotFunc(mag2, "Mag2")
+        plotFunc(phase1, "phase1")
+        outputImage = combine(mag2, phase1)
+        plotFunc(outputImage, "output")
+
+    elif(mode == "Uni1-Phase2"):
+        phase2 = magnitudeFunc(fourier2)
+        plotFunc(mag1, "Mag1")
+        plotFunc(phase2, "phase2")
+        outputImage = combine(mag1, phase2)
+        plotFunc(outputImage, "output")
+
+    elif(mode == "Mag1-Uni2"):
+        mag1 = magnitudeFunc(fourier1)
+        plotFunc(mag1, "Mag1")
+        plotFunc(phase2, "phase2")
+        outputImage = combine(mag1, phase2)
+        plotFunc(outputImage, "output")
+    else:
+        pass
 
 
 @app.route('/')
@@ -24,6 +150,29 @@ def upload_file2():
 
     file2 = request.files['file']
     Image = file2.save(os.path.join('assets/image2.png'))
+
+    return []
+
+
+values1 = ["Uni1"]
+values2 = ["Uni2"]
+
+
+@app.route('/selected-items', methods=['GET', 'POST'])
+def select():
+
+    data1 = request.values.get('select1')
+    data2 = request.values.get('select2')
+
+    if data1 != None:
+        values1.append(data1)
+
+    if data2 != None:
+        values2.append(data2)
+
+    mode = values1[-1]+"-"+values2[-1]
+    print(mode)
+    processing('assets\image.png', 'assets\image2.png', mode)
 
     return []
 
