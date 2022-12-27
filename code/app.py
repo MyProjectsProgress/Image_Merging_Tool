@@ -38,18 +38,13 @@ def plotFunc(x, s):
     plt.figure(figsize=(8, 6), dpi=80)
     plt.imshow(x, cmap='gray')
     plt.title(s), plt.xticks([]), plt.yticks([])
-    if(s == "Mag1"):
+    if(s == "1"):
 
-        plt.savefig('static/uploads/Mag1.png')
-    elif(s == "Mag2"):
+        plt.savefig('static/uploads/1.png')
 
-        plt.savefig('static/uploads/Mag2.png')
-    elif(s == "phase1"):
+    elif(s == "2"):
 
-        plt.savefig('static/uploads/phase1.png')
-    elif(s == "phase2"):
-
-        plt.savefig('static/uploads/phase2.png')
+        plt.savefig('static/uploads/2.png')
     elif(s == "output"):
         plt.savefig('static/uploads/output.png')
 
@@ -71,21 +66,21 @@ def processing(path1, path2, mode):
     fourier1, fourierShift1 = fourierFunc(img1)
 
    # IMAGE TWO FOURIER
-    fourier2, fourierShift2 = fourierFunc(img1)
+    fourier2, fourierShift2 = fourierFunc(img2)
 
-    mag1 = np.ones(img1.shape)
-    mag2 = np.ones(img2.shape)
-    phase1 = np.zeros(img1.shape)
-    phase2 = np.zeros(img2.shape)
+    magUni1 = np.ones(img1.shape)
+    magUni2 = np.ones(img2.shape)
+    phaseUni1 = np.zeros(img1.shape)
+    phaseUni2 = np.zeros(img2.shape)
 
     if(mode == "Mag1-Phase2"):
         mag1 = magnitudeFunc(fourier1)
         mag_spectrum = magnitudeSpectrum(fourierShift1)
         phase2 = phaseFunc(fourier2)
-        plotFunc(mag_spectrum, "Mag1")
+        plotFunc(mag_spectrum, "1")
         print("a7a")
 
-        plotFunc(phase2, "phase2")
+        plotFunc(phase2, "2")
         print("a7a2")
 
         outputImage = combine(mag1, phase2)
@@ -94,38 +89,44 @@ def processing(path1, path2, mode):
 
     elif(mode == "Phase1-Mag2"):
         mag2 = magnitudeFunc(fourier2)
+        mag_spectrum = magnitudeSpectrum(fourierShift2)
+
         phase1 = phaseFunc(fourier1)
-        plotFunc(mag2, "Mag2")
-        plotFunc(phase1, "phase1")
+        plotFunc(mag_spectrum, "2")
+        plotFunc(phase1, "1")
         outputImage = combine(mag2, phase1)
         plotFunc(outputImage, "output")
 
     elif(mode == "Phase1-Uni2"):
         phase1 = phaseFunc(fourier1)
-        plotFunc(mag2, "Mag2")
-        plotFunc(phase1, "phase1")
-        outputImage = combine(mag2, phase1)
+        magSpectrum = magnitudeSpectrum(magUni2)
+        plotFunc(magSpectrum, "2")
+        plotFunc(phase1, "1")
+        outputImage = combine(magUni2, phase1)
         plotFunc(outputImage, "output")
 
     elif(mode == "Uni1-Mag2"):
         mag2 = magnitudeFunc(fourier2)
-        plotFunc(mag2, "Mag2")
-        plotFunc(phase1, "phase1")
-        outputImage = combine(mag2, phase1)
+        magSpectrum = magnitudeSpectrum(mag2)
+        plotFunc(magSpectrum, "2")
+        plotFunc(phaseUni1, "1")
+        outputImage = combine(mag2, phaseUni1)
         plotFunc(outputImage, "output")
 
     elif(mode == "Uni1-Phase2"):
-        phase2 = magnitudeFunc(fourier2)
-        plotFunc(mag1, "Mag1")
-        plotFunc(phase2, "phase2")
-        outputImage = combine(mag1, phase2)
+        phase2 = phaseFunc(fourier2)
+        magSpectrum = magnitudeSpectrum(magUni1)
+        plotFunc(magSpectrum, "1")
+        plotFunc(phase2, "2")
+        outputImage = combine(magUni1, phase2)
         plotFunc(outputImage, "output")
 
     elif(mode == "Mag1-Uni2"):
         mag1 = magnitudeFunc(fourier1)
-        plotFunc(mag1, "Mag1")
-        plotFunc(phase2, "phase2")
-        outputImage = combine(mag1, phase2)
+        magSpectrum = magnitudeSpectrum(mag1)
+        plotFunc(magSpectrum, "1")
+        plotFunc(phaseUni2, "2")
+        outputImage = combine(mag1, phaseUni2)
         plotFunc(outputImage, "output")
     else:
         pass

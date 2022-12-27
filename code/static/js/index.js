@@ -1,3 +1,11 @@
+const img1 = document.getElementById("img1");
+const img1_url = "../static/uploads/1.png"
+const img2 = document.getElementById("img2");
+const img2_url = "../static/uploads/2.png"
+const output_img = document.getElementById("output");
+const output_img_url = "../static/uploads/output.png"
+
+
 var file = document.querySelector("#file1")
 file.addEventListener("change", function () {
     const reader = new FileReader()
@@ -27,6 +35,9 @@ document.getElementById("select1").onchange = function () {
         dataType: 'json',
 
         success: function (response) {
+            img1.setAttribute("src", `${img1_url}?r=${new Date().getTime()}`);
+            output_img.setAttribute("src", `${output_img_url}?r=${new Date().getTime()}`);
+
 
         }
     })
@@ -44,6 +55,8 @@ document.getElementById("select2").onchange = function () {
         dataType: 'json',
 
         success: function (response) {
+            img2.setAttribute("src", `${img2_url}?r=${new Date().getTime()}`);
+            output_img.setAttribute("src", `${output_img_url}?r=${new Date().getTime()}`);
 
         }
     })
@@ -63,6 +76,8 @@ document.getElementById("file1").onchange = function () {
         processData: false,
         async: true,
         success: function (data) {
+            alert("suiiii")
+
         }
     });
 };
