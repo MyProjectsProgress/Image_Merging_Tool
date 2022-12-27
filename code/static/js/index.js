@@ -6,6 +6,7 @@ const output_img = document.getElementById("output");
 const output_img_url = "../static/uploads/output.png"
 
 
+
 var file = document.querySelector("#file1")
 file.addEventListener("change", function () {
     const reader = new FileReader()

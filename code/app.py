@@ -35,9 +35,10 @@ def magnitudeFunc(fourier):
 
 
 def plotFunc(x, s):
-    plt.figure(figsize=(8, 6), dpi=80)
+    plt.figure(figsize=(8, 6), dpi=80, frameon=False)
+    plt.axis('off')
+
     plt.imshow(x, cmap='gray')
-    plt.title(s), plt.xticks([]), plt.yticks([])
     if(s == "1"):
 
         plt.savefig('static/uploads/1.png')
