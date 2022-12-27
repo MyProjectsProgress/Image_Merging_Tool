@@ -73,6 +73,8 @@ canvas.onmousemove = (event) => {
 
 canvas.onmouseup = () => {
     draw_phase = false;
+    console.log("slice x [", startX, ":", endX, "]");
+    console.log("slice y [", startY, ":", endY, "]");
 };
 
 
@@ -80,13 +82,12 @@ canvas2.onmousedown = (event) => {
     draw_phase2 = true;
     startX = parseInt(event.clientX - rect2.left);
     startY = parseInt(event.clientY - rect2.top);
-    // snapshot2 = canvas2.getImageData(0, 0, canvas2.width, canvas2.height);
+    snapshot2 = context2.getImageData(0, 0, canvas.width, canvas.height);
 };
 
 canvas2.onmousemove = (event) => {
     if (draw_phase2) {
-        context2.clearRect(0, 0, canvas2.width, canvas2.height);
-        // context2.putImageData(snapshot2, 0, 0);
+        context2.putImageData(snapshot2, 0, 0);
         endX = parseInt(event.clientX - rect2.left);
         endY = parseInt(event.clientY - rect2.top);
         if (radioBtns2[0].checked) {
@@ -99,6 +100,8 @@ canvas2.onmousemove = (event) => {
 
 canvas2.onmouseup = () => {
     draw_phase2 = false;
+    console.log("slice x [", startX , ":", endX , "]");
+    console.log("slice y [", startY, ":", endY, "]");
 };
 
 
