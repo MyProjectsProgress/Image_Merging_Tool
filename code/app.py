@@ -10,14 +10,12 @@ from PIL import Image, ImageChops
 
 app = Flask(__name__)
 
-def trim(im):
-    bg = Image.new(im.mode, im.size, im.getpixel((0, 0)))
-    diff = ImageChops.difference(im, bg)
-    diff = ImageChops.add(diff, diff, 2.0, -100)
-    bbox = diff.getbbox()
-    if bbox:
-        return im.crop(bbox)
-folder = "static/uploads"
+
+def scale(image_array):
+    image = ((image_array - image_array.min()) * (1/(image_array.max() - image_array.min()) * 255)).astype('uint8')
+    return image
+
+
 def fourierFunc(img):
     fourier = np.fft.fft2(img)
     fourierShift = np.fft.fftshift(fourier)
@@ -45,27 +43,15 @@ def magnitudeFunc(fourier):
 
 
 def plotFunc(x, s):
-    plt.figure(figsize=(8, 6), dpi=80, frameon=False)
-    plt.axis('off')
 
-    plt.imshow(x, cmap='gray')
     if(s == "1"):
-
-        plt.savefig('static/uploads/1.png', bbox_inches='tight')
+        cv.imwrite('static/uploads/1.png', x)
 
     elif(s == "2"):
+        cv.imwrite('static/uploads/2.png', x)
 
-        plt.savefig('static/uploads/2.png', bbox_inches='tight')
     elif(s == "output"):
-        plt.savefig('static/uploads/output.png', bbox_inches='tight')
-
-
-    filePath = os.path.join(folder, s+".png")
-    im = Image.open(filePath)
-    im = trim(im)
-    newFilePath = os.path.join(folder, s+".png")
-    im.save(newFilePath)
-
+        cv.imwrite('static/uploads/output.png', x)
 
 def combine(mag, phase):
     combined = np.multiply(mag, np.exp(1j * phase))
@@ -75,8 +61,8 @@ def combine(mag, phase):
 
 
 def processing(path1, path2, mode):
-    # read & resize
 
+    # READ & RESIZE
     img1 = cv.imread(path1, 0)
     img2 = cv.imread(path2, 0)
     img2 = resizeFunc(img1, img2)
@@ -95,23 +81,19 @@ def processing(path1, path2, mode):
         mag1 = magnitudeFunc(fourier1)
         mag_spectrum = magnitudeSpectrum(fourierShift1)
         phase2 = phaseFunc(fourier2)
+        phase2Show = scale(phase2)
         plotFunc(mag_spectrum, "1")
-        print("a7a")
-
-        plotFunc(phase2, "2")
-        print("a7a2")
-
+        plotFunc(phase2Show, "2")
         outputImage = combine(mag1, phase2)
         plotFunc(outputImage, "output")
-        print("a7a3")
 
     elif(mode == "Phase1-Mag2"):
         mag2 = magnitudeFunc(fourier2)
         mag_spectrum = magnitudeSpectrum(fourierShift2)
-
         phase1 = phaseFunc(fourier1)
         plotFunc(mag_spectrum, "2")
-        plotFunc(phase1, "1")
+        phase1Show = scale(phase1)
+        plotFunc(phase1Show, "1")
         outputImage = combine(mag2, phase1)
         plotFunc(outputImage, "output")
 
@@ -119,7 +101,8 @@ def processing(path1, path2, mode):
         phase1 = phaseFunc(fourier1)
         magSpectrum = magnitudeSpectrum(magUni2)
         plotFunc(magSpectrum, "2")
-        plotFunc(phase1, "1")
+        phase1Show = scale(phase1)
+        plotFunc(phase1Show, "1")
         outputImage = combine(magUni2, phase1)
         plotFunc(outputImage, "output")
 
@@ -127,7 +110,8 @@ def processing(path1, path2, mode):
         mag2 = magnitudeFunc(fourier2)
         magSpectrum = magnitudeSpectrum(mag2)
         plotFunc(magSpectrum, "2")
-        plotFunc(phaseUni1, "1")
+        phaseUni1Show = scale(phaseUni1)
+        plotFunc(phaseUni1Show, "1")
         outputImage = combine(mag2, phaseUni1)
         plotFunc(outputImage, "output")
 
@@ -135,7 +119,8 @@ def processing(path1, path2, mode):
         phase2 = phaseFunc(fourier2)
         magSpectrum = magnitudeSpectrum(magUni1)
         plotFunc(magSpectrum, "1")
-        plotFunc(phase2, "2")
+        phase2Show = scale(phase2)
+        plotFunc(phase2Show, "2")
         outputImage = combine(magUni1, phase2)
         plotFunc(outputImage, "output")
 
@@ -143,13 +128,12 @@ def processing(path1, path2, mode):
         mag1 = magnitudeFunc(fourier1)
         magSpectrum = magnitudeSpectrum(mag1)
         plotFunc(magSpectrum, "1")
-        plotFunc(phaseUni2, "2")
+        phaseUni2Show = scale(phaseUni2)
+        plotFunc(phaseUni2Show, "2")
         outputImage = combine(mag1, phaseUni2)
         plotFunc(outputImage, "output")
     else:
         pass
-
-
 @app.route('/')
 def home():
     return render_template('index.html')
