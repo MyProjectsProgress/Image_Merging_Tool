@@ -27,14 +27,14 @@ body {
     flex-direction: row;
 }
 
-#canvas{
+#canvas {
     background-image: url("");
     background-size: contain;
     background-repeat: no-repeat;
     width: 100%;
 }
 
-#canvas2{
+#canvas2 {
     background-image: url("");
     background-size: contain;
     background-repeat: no-repeat;
@@ -47,7 +47,7 @@ body {
     margin-right: 20px;
 }
 
-.display{
+.display {
     min-width: 290px;
 }
 
@@ -60,12 +60,12 @@ body {
     margin-left: 12%;
 }
 
-.shape_btn{
+.shape_btn {
     margin-top: 30px;
     transform: translateX(-25px);
 }
 
-.shape_btn input{
+.shape_btn input {
     margin-bottom: 10px;
 }
 

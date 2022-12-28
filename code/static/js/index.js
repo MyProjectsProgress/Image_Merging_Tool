@@ -52,7 +52,7 @@ var endX = 290;
 var endY = 290;
 
 // Drawing shapes
-function drawRect (context) {
+function drawRect(context) {
     let rectWidth = endX - startX;
     let rectHeight = endY - startY;
     context.fillStyle = "rgb(239, 239, 239, 0.4)";
@@ -60,7 +60,7 @@ function drawRect (context) {
     context.fillRect(startX, startY, rectWidth, rectHeight);
 };
 
-function drawEllipse (context) {
+function drawEllipse(context) {
     context.beginPath();
     context.fillStyle = "rgb(239, 239, 239, 0.4)";
     context.ellipse(startX, startY, Math.abs(endX - startX), Math.abs(endY - startY), 0, Math.PI * 2, false);
@@ -68,6 +68,7 @@ function drawEllipse (context) {
     context.fill();
     context.closePath();
 };
+
 
 
 // Mouse actions for 1st canvas
@@ -80,10 +81,10 @@ canvas.onmousedown = (event) => {
 
 canvas.onmousemove = (event) => {
     if (draw_phase) {
-        context.putImageData(snapshot,0,0);
+        context.putImageData(snapshot, 0, 0);
         endX = parseInt(event.clientX - rect.left);
         endY = parseInt(event.clientY - rect.top);
-        if (radioBtns1[0].checked){
+        if (radioBtns1[0].checked) {
             drawRect(context);
         }
         else if (radioBtns1[1].checked) {
@@ -94,8 +95,11 @@ canvas.onmousemove = (event) => {
 
 canvas.onmouseup = () => {
     draw_phase = false;
-    console.log("slice x [", startX, ":", endX, "]");
-    console.log("slice y [", startY, ":", endY, "]");
+    if((startX==endX)||(startY==endY)) {
+        return;
+    }
+    sendShapes(1);
+
 };
 
 
@@ -122,11 +126,44 @@ canvas2.onmousemove = (event) => {
 
 canvas2.onmouseup = () => {
     draw_phase2 = false;
-    console.log("slice x [", startX , ":", endX , "]");
-    console.log("slice y [", startY, ":", endY, "]");
+    if((startX==endX)||(startY==endY)) {
+        return;
+    }
+    sendShapes(2);
 };
 
+function sendShapes(canvas_index) {
+    var shape = {};
+    if (radioBtns1[0].checked) {
+        shape = {
+            "x1": Math.min(startX, endX),
+            "x2": Math.max(startX, endX),
+            "y1": Math.min(startY, endY),
+            "y2": Math.max(startY, endY),
+            "canvas_index": canvas_index
+        };
+    }
+    else {
+        shape = {
+            "x1": startX,
+            "y1": startY,
+            "rx": Math.abs(endX - startX),
+            "ry": Math.abs(endY - startY),
+            "canvas_index": canvas_index
+        };
+    }
+    $.ajax({
+        type: "POST",
+        url: AjaxURL,
+        data: shape,
+        dataType: 'json',
+        success: function (result) {
+            window.console.log('Successful');
+        }
+    });
 
+
+}
 
 // Uploading and selecting
 file.addEventListener("change", function () {
@@ -189,7 +226,7 @@ document.getElementById("select1").onchange = function () {
         dataType: 'json',
         success: function (response) {
             var new_url = img1_url + `?r=${new Date().getTime()}`;
-            canvas.style.backgroundImage = "url( " + new_url + " )";            
+            canvas.style.backgroundImage = "url( " + new_url + " )";
             output_img.setAttribute("src", `${output_img_url}?r=${new Date().getTime()}`);
         }
     })
