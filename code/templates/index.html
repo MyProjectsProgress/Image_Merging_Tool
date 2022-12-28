@@ -20,38 +20,41 @@
         <div class="input">
             <div class="images">
                 <img id="display1" class="display">
-                <canvas id="canvas" class="canv_image"></canvas>
-
+                <canvas id="canvas" class="canv_image1"></canvas>
             </div>
 
             <div class="buttons">
                 <form id="upload-file" method="post" enctype="multipart/form-data">
-                <input id="file1" type="file" name="file" class="upload_btn"/>
+                    <input id="file1" type="file" name="file" class="upload_btn"/>
                 </form>
-                <select name="" id="" class="select_menu">
-                    <option value="">Magnitude</option>
-                    <option value="">Phase</option>
+                <select name="" id="select1">
+                    <option value="" hidden="true">choose an option</option>
+                    <option value="Uni1" id="Uni1" >Uniform</option>
+                    <option value="Mag1" id="Mag1">Magnitude</option>
+                    <option value="Phase1" id="Phase1">Phase</option>
                 </select>
                 <div class="shape_btn">
                     <input type="radio" name="shape" id="" value="" checked>Rectangle
                     <input type="radio" name="shape" id="" value="">Ellipse
-                </div>
+                </div>      
             </div>
         </div>
 
         <div class="input">
             <div class="images">
                 <img id="display2" class="display">
-                <canvas id="canvas2" class="canv_image"></canvas>
+                <canvas id="canvas2" class="canv_image2"></canvas>
             </div>
             
             <div class="buttons">
                 <form id="upload-file2" method="post" enctype="multipart/form-data">
                     <input id="file2" type="file" name="file" class="upload_btn"/>
-                    </form>        
-                <select name="" id="" class="select_menu">
-                    <option value="">Magnitude</option>
-                    <option value="">Phase</option>
+                </form>      
+                <select name="" id="select2" class="select_box2">
+                    <option value="" hidden="true">choose an option</option>
+                    <option value="Uni2" id="Uni2"  >Uniform</option>
+                    <option value="Mag2" id="Mag2" >Magnitude</option>
+                    <option value="Phase2" id="Phase2" >Phase</option>
                 </select>
                 <div class="shape_btn">
                     <input type="radio" name="shape2" id="" value="" checked>Rectangle
@@ -64,10 +67,9 @@
 
     <div class="output">
         <h3>Output Image</h3>
-        <img src="../static/img/coffee.png" alt="">
+        <img src="" alt="" id='output'>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
     <script src="../static/js/index.js"></script>
 </body>
 </html>
