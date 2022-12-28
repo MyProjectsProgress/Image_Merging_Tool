@@ -4,10 +4,20 @@ import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 import json
+import os
+from PIL import Image, ImageChops
+
 
 app = Flask(__name__)
 
-
+def trim(im):
+    bg = Image.new(im.mode, im.size, im.getpixel((0, 0)))
+    diff = ImageChops.difference(im, bg)
+    diff = ImageChops.add(diff, diff, 2.0, -100)
+    bbox = diff.getbbox()
+    if bbox:
+        return im.crop(bbox)
+folder = "static/uploads"
 def fourierFunc(img):
     fourier = np.fft.fft2(img)
     fourierShift = np.fft.fftshift(fourier)
@@ -48,6 +58,13 @@ def plotFunc(x, s):
         plt.savefig('static/uploads/2.png', bbox_inches='tight')
     elif(s == "output"):
         plt.savefig('static/uploads/output.png', bbox_inches='tight')
+
+
+    filePath = os.path.join(folder, s+".png")
+    im = Image.open(filePath)
+    im = trim(im)
+    newFilePath = os.path.join(folder, s+".png")
+    im.save(newFilePath)
 
 
 def combine(mag, phase):
