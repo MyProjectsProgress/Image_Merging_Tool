@@ -7,7 +7,7 @@ body {
 
 .input {
     background: rgb(242, 240, 240);
-    width: 100%;
+    width: 111%;
     height: 290px;
     margin-top: 25px;
     display: flex;
@@ -17,14 +17,19 @@ body {
     margin-left: 20px;
 }
 
-.input select {
-    margin-top: 50px;
-    margin-right: 60px;
-}
-
 .images {
     display: flex;
     flex-direction: row;
+}
+
+.display {
+    min-width: 290px;
+}
+
+.input .images img {
+    width: 290px;
+    height: 290px;
+    margin-right: 20px;
 }
 
 #canvas {
@@ -41,14 +46,9 @@ body {
     width: 100%;
 }
 
-.input .images img {
-    width: 290px;
-    height: 290px;
-    margin-right: 20px;
-}
-
-.display {
-    min-width: 290px;
+.input select {
+    margin-top: 50px;
+    margin-right: 60px;
 }
 
 .buttons {
@@ -56,13 +56,20 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 80px;
+    margin-top: 60px;
     margin-left: 12%;
+}
+
+.upload_btn {
+    transform: translateX(-30px);
+    width: 91px;
+    margin-bottom: -40px;
 }
 
 .shape_btn {
     margin-top: 30px;
     transform: translateX(-25px);
+    visibility: collapse;
 }
 
 .shape_btn input {
@@ -74,10 +81,11 @@ body {
     margin-bottom: -10px;
 }
 
-.upload_btn {
+.clear_btn {
+    margin-top: -50px;
+    width: 110px;
+    height: 30px;
     transform: translateX(-30px);
-    width: 91px;
-    margin-bottom: -40px;
 }
 
 .output {

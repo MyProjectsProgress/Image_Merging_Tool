@@ -65,8 +65,12 @@ def plotFunc(x, s):
 
 def combine(mag, phase):
     combined = np.multiply(mag, np.exp(1j * phase))
-    mixInverse = np.real(np.fft.ifft2(combined))
 
+    return combined
+
+
+def mixInverse(combined):
+    mixInverse = np.real(np.fft.ifft2(combined))
     return mixInverse
 
 
@@ -79,7 +83,7 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
     # IMAGE ONE FOURIER
     fourier1, fourierShift1 = fourierFunc(img1)
 
-   # IMAGE TWO FOURIER
+    # IMAGE TWO FOURIER
     fourier2, fourierShift2 = fourierFunc(img2)
 
     magUni1 = np.ones(img1.shape)
@@ -88,7 +92,6 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
     phaseUni2 = np.zeros(img2.shape)
 
     if(mode == "Mag1-Phase2"):
-
         mag1 = magnitudeFunc(fourier1)
         mag1 = update(mag1, x1, x2, y1, y2)
         mag_spectrum = magnitudeSpectrum(fourierShift1)
@@ -97,7 +100,9 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
         plotFunc(mag_spectrum, "1")
         plotFunc(phase2Show, "2")
         phase2 = update(phase2, x11, x22, y11, y22)
-        outputImage += combine(mag1, phase2)
+
+        combined_image = combine(mag1, phase2)
+        outputImage = mixInverse(combined_image)
         plotFunc(outputImage, "output")
 
     elif(mode == "Phase1-Mag2"):
@@ -109,7 +114,9 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
         phase1Show = scale(phase1)
         plotFunc(phase1Show, "1")
         phase1 = update(phase1, x1, x2, y1, y2)
-        outputImage = combine(mag2, phase1)
+
+        combined_image = combine(mag2, phase1)
+        outputImage = mixInverse(combined_image)
         plotFunc(outputImage, "output")
 
     elif(mode == "Phase1-Uni2"):
@@ -120,8 +127,8 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
         plotFunc(phase1Show, "1")
         phase1 = update(phase1, x1, x2, y1, y2)
         magUni2 = update(magUni2, x11, x22, y11, y22)
-
-        outputImage = combine(magUni2, phase1)
+        combined_image = combine(magUni2, phase1)
+        outputImage = mixInverse(combined_image)
         plotFunc(outputImage, "output")
 
     elif(mode == "Uni1-Mag2"):
@@ -132,7 +139,9 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
         plotFunc(phaseUni1Show, "1")
         mag2 = update(mag2, x11, x22, y11, y22)
         phaseUni1 = update(phaseUni1, x1, x2, y1, y2)
-        outputImage = combine(mag2, phaseUni1)
+
+        combined_image = combine(mag2, phaseUni1)
+        outputImage = mixInverse(combined_image)
         plotFunc(outputImage, "output")
 
     elif(mode == "Uni1-Phase2"):
@@ -143,7 +152,8 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
         plotFunc(phase2Show, "2")
         phase2 = update(phase2, x11, x22, y11, y22)
         magUni1 = update(magUni1, x1, x2, y1, y2)
-        outputImage = combine(magUni1, phase2)
+        combined_image = combine(magUni1, phase2)
+        outputImage = mixInverse(combined_image)
         plotFunc(outputImage, "output")
 
     elif(mode == "Mag1-Uni2"):
@@ -153,8 +163,10 @@ def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000
         phaseUni2Show = scale(phaseUni2)
         plotFunc(phaseUni2Show, "2")
         mag1 = update(mag1, x1, x2, y1, y2)
-        phaseUni2 = update(phaseUni1, x11, x22, y11, y22)
-        outputImage = combine(mag1, phaseUni2)
+        phaseUni2 = update(phaseUni2, x11, x22, y11, y22)
+
+        combined_image = combine(mag1, phaseUni2)
+        outputImage = mixInverse(combined_image)
         plotFunc(outputImage, "output")
     else:
         pass
@@ -185,7 +197,7 @@ def upload_file2():
 
 values1 = ["Uni1"]
 values2 = ["Uni2"]
-mode = []
+mode = ["Mag1-Uni2"]
 
 
 @app.route('/selected-items', methods=['GET', 'POST'])
@@ -201,27 +213,67 @@ def select():
         values2.append(data2)
 
     mode.append(values1[-1]+"-"+values2[-1])
-    print(mode)
+
+    processing('assets\image.png', 'assets\image2.png', mode[-1])
 
     return []
+
+
+left1 = [0]
+right1 = [6000]
+top1 = [0]
+bottom1 = [6000]
+left2 = [0]
+right2 = [6000]
+top2 = [0]
+bottom2 = [6000]
 
 
 @app.route('/Shapes', methods=['GET', 'POST'])
 def Shapes():
 
     data = request.get_json()
-    if((data["canvas_index"] == 1)):
-        image1_x1 = data["x1"]
-        image1_x2 = data["x2"]
-        image1_y1 = data["y1"]
-        image1_y2 = data["y2"]
+
+    if(len(data[0]) == 0):
+        left1.append(0)
+        right1.append(6000)
+        top1.append(0)
+        bottom1.append(6000)
+        processing('assets\image.png', 'assets\image2.png', mode[-1])
 
     else:
-        image2_x1 = data["x1"]
-        image2_x2 = data["x2"]
-        image2_y1 = data["y1"]
-        image2_y2 = data["y2"]
-    processing('assets\image.png', 'assets\image2.png',mode[-1], image1_x1, image1_x2, image1_y1, image1_y2, image2_x1, image2_x2, image2_y1, image2_y2)
+        for item in data[0]:
+            x1 = item["x"]
+            x2 = item["x"] + item["width"]
+            y1 = item["y"]
+            y2 = item["y"] + item["height"]
+            left1.append(min(x1, x2))
+            right1.append(max(x1, x2))
+            top1.append(min(y1, y2))
+            bottom1.append(max(y1, y2))
+            processing('assets\image.png', 'assets\image2.png',
+                       mode[-1], left1[-1], right1[-1], top1[-1], bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+
+    if(len(data[1]) == 0):
+        left2.append(0)
+        right2.append(6000)
+        top2.append(0)
+        bottom2.append(6000)
+        processing('assets\image.png', 'assets\image2.png',
+                   mode[-1], left1[-1], right1[-1], top1[-1], bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+
+    else:
+        for item in data[1]:
+            x1 = item["x"]
+            x2 = item["x"] + item["width"]
+            y1 = item["y"]
+            y2 = item["y"] + item["height"]
+            left2.append(min(x1, x2))
+            right2.append(max(x1, x2))
+            top2.append(min(y1, y2))
+            bottom2.append(max(y1, y2))
+            processing('assets\image.png', 'assets\image2.png',
+                       mode[-1], left1[-1], right1[-1], top1[-1], bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
 
     return []
 
