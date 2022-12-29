@@ -95,7 +95,7 @@ canvas.onmousemove = (event) => {
 
 canvas.onmouseup = () => {
     draw_phase = false;
-    if((startX==endX)||(startY==endY)) {
+    if ((startX == endX) || (startY == endY)) {
         return;
     }
     sendShapes(1);
@@ -126,36 +126,28 @@ canvas2.onmousemove = (event) => {
 
 canvas2.onmouseup = () => {
     draw_phase2 = false;
-    if((startX==endX)||(startY==endY)) {
+    if ((startX == endX) || (startY == endY)) {
         return;
     }
     sendShapes(2);
 };
 
 function sendShapes(canvas_index) {
-    var shape = {};
-    if (radioBtns1[0].checked) {
         shape = {
             "x1": Math.min(startX, endX),
             "x2": Math.max(startX, endX),
             "y1": Math.min(startY, endY),
             "y2": Math.max(startY, endY),
             "canvas_index": canvas_index
+        
         };
-    }
-    else {
-        shape = {
-            "x1": startX,
-            "y1": startY,
-            "rx": Math.abs(endX - startX),
-            "ry": Math.abs(endY - startY),
-            "canvas_index": canvas_index
-        };
-    }
+    
+ 
     $.ajax({
         type: "POST",
-        url: AjaxURL,
-        data: shape,
+        contentType: "application/json;charset=utf-8",
+        url: "http://127.0.0.1:5000/Shapes",
+        data: JSON.stringify(shape),
         dataType: 'json',
         success: function (result) {
             window.console.log('Successful');

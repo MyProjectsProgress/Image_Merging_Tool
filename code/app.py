@@ -11,8 +11,17 @@ from PIL import Image, ImageChops
 app = Flask(__name__)
 
 
+def update(arr, x1, x2, y1, y2):
+    for i in range(arr.shape[0]):
+        for j in range(arr.shape[1]):
+            if (i < x1 or i > x2) or (j <= y1 or j > y2):
+                arr[i][j] = 1
+    return arr
+
+
 def scale(image_array):
-    image = ((image_array - image_array.min()) * (1/(image_array.max() - image_array.min()) * 255)).astype('uint8')
+    image = ((image_array - image_array.min()) *
+             (1/(image_array.max() - image_array.min()) * 255)).astype('uint8')
     return image
 
 
@@ -53,6 +62,7 @@ def plotFunc(x, s):
     elif(s == "output"):
         cv.imwrite('static/uploads/output.png', x)
 
+
 def combine(mag, phase):
     combined = np.multiply(mag, np.exp(1j * phase))
     mixInverse = np.real(np.fft.ifft2(combined))
@@ -60,7 +70,7 @@ def combine(mag, phase):
     return mixInverse
 
 
-def processing(path1, path2, mode):
+def processing(path1, path2, mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000, y11=0, y22=6000):
 
     # READ & RESIZE
     img1 = cv.imread(path1, 0)
@@ -78,22 +88,27 @@ def processing(path1, path2, mode):
     phaseUni2 = np.zeros(img2.shape)
 
     if(mode == "Mag1-Phase2"):
+
         mag1 = magnitudeFunc(fourier1)
+        mag1 = update(mag1, x1, x2, y1, y2)
         mag_spectrum = magnitudeSpectrum(fourierShift1)
         phase2 = phaseFunc(fourier2)
         phase2Show = scale(phase2)
         plotFunc(mag_spectrum, "1")
         plotFunc(phase2Show, "2")
-        outputImage = combine(mag1, phase2)
+        phase2 = update(phase2, x11, x22, y11, y22)
+        outputImage += combine(mag1, phase2)
         plotFunc(outputImage, "output")
 
     elif(mode == "Phase1-Mag2"):
         mag2 = magnitudeFunc(fourier2)
+        mag2 = update(mag2, x11, x22, y11, y22)
         mag_spectrum = magnitudeSpectrum(fourierShift2)
         phase1 = phaseFunc(fourier1)
         plotFunc(mag_spectrum, "2")
         phase1Show = scale(phase1)
         plotFunc(phase1Show, "1")
+        phase1 = update(phase1, x1, x2, y1, y2)
         outputImage = combine(mag2, phase1)
         plotFunc(outputImage, "output")
 
@@ -103,6 +118,9 @@ def processing(path1, path2, mode):
         plotFunc(magSpectrum, "2")
         phase1Show = scale(phase1)
         plotFunc(phase1Show, "1")
+        phase1 = update(phase1, x1, x2, y1, y2)
+        magUni2 = update(magUni2, x11, x22, y11, y22)
+
         outputImage = combine(magUni2, phase1)
         plotFunc(outputImage, "output")
 
@@ -112,6 +130,8 @@ def processing(path1, path2, mode):
         plotFunc(magSpectrum, "2")
         phaseUni1Show = scale(phaseUni1)
         plotFunc(phaseUni1Show, "1")
+        mag2 = update(mag2, x11, x22, y11, y22)
+        phaseUni1 = update(phaseUni1, x1, x2, y1, y2)
         outputImage = combine(mag2, phaseUni1)
         plotFunc(outputImage, "output")
 
@@ -121,6 +141,8 @@ def processing(path1, path2, mode):
         plotFunc(magSpectrum, "1")
         phase2Show = scale(phase2)
         plotFunc(phase2Show, "2")
+        phase2 = update(phase2, x11, x22, y11, y22)
+        magUni1 = update(magUni1, x1, x2, y1, y2)
         outputImage = combine(magUni1, phase2)
         plotFunc(outputImage, "output")
 
@@ -130,10 +152,14 @@ def processing(path1, path2, mode):
         plotFunc(magSpectrum, "1")
         phaseUni2Show = scale(phaseUni2)
         plotFunc(phaseUni2Show, "2")
+        mag1 = update(mag1, x1, x2, y1, y2)
+        phaseUni2 = update(phaseUni1, x11, x22, y11, y22)
         outputImage = combine(mag1, phaseUni2)
         plotFunc(outputImage, "output")
     else:
         pass
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -159,6 +185,7 @@ def upload_file2():
 
 values1 = ["Uni1"]
 values2 = ["Uni2"]
+mode = []
 
 
 @app.route('/selected-items', methods=['GET', 'POST'])
@@ -173,9 +200,28 @@ def select():
     if data2 != None:
         values2.append(data2)
 
-    mode = values1[-1]+"-"+values2[-1]
+    mode.append(values1[-1]+"-"+values2[-1])
     print(mode)
-    processing('assets\image.png', 'assets\image2.png', mode)
+
+    return []
+
+
+@app.route('/Shapes', methods=['GET', 'POST'])
+def Shapes():
+
+    data = request.get_json()
+    if((data["canvas_index"] == 1)):
+        image1_x1 = data["x1"]
+        image1_x2 = data["x2"]
+        image1_y1 = data["y1"]
+        image1_y2 = data["y2"]
+
+    else:
+        image2_x1 = data["x1"]
+        image2_x2 = data["x2"]
+        image2_y1 = data["y1"]
+        image2_y2 = data["y2"]
+    processing('assets\image.png', 'assets\image2.png',mode[-1], image1_x1, image1_x2, image1_y1, image1_y2, image2_x1, image2_x2, image2_y1, image2_y2)
 
     return []
 
