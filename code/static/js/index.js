@@ -143,6 +143,20 @@ canvas.onmouseup = () => {
     sendShapes();
 };
 
+canvas.onmouseout = () => {
+    if (draw_phase) {
+        draw_phase = false;
+        shapes = []
+        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight });
+    }
+
+    else {
+        drag_phase = false;
+    }
+
+    sendShapes();
+};
+
 // for clear button
 clear_canvas1.onclick = function () {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -195,6 +209,19 @@ canvas2.onmousemove = (event) => {
 };
 
 canvas2.onmouseup = () => {
+    if (draw_phase2) {
+        draw_phase2 = false;
+        shapes2 = []
+        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight });
+    }
+
+    else {
+        drag_phase2 = false;
+    }
+    sendShapes();
+};
+
+canvas2.onmouseout = () => {
     if (draw_phase2) {
         draw_phase2 = false;
         shapes2 = []
