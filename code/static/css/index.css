@@ -33,7 +33,7 @@ body {
 }
 
 #canvas {
-    background-image: url("");
+    background-image: url("../img/coffee.png");
     background-size: contain;
     background-repeat: no-repeat;
     width: 100%;
@@ -66,23 +66,13 @@ body {
     margin-bottom: -40px;
 }
 
-.shape_btn {
-    margin-top: 30px;
-    transform: translateX(-25px);
-    visibility: collapse;
-}
-
-.shape_btn input {
-    margin-bottom: 10px;
-}
-
 .select_menu {
     transform: translateY(-5px);
     margin-bottom: -10px;
 }
 
 .clear_btn {
-    margin-top: -50px;
+    margin-top: 40px;
     width: 110px;
     height: 30px;
     transform: translateX(-30px);

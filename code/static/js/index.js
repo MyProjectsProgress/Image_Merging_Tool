@@ -20,7 +20,6 @@ const img2_url = "../static/uploads/2.png";
 const output_img = document.getElementById("output");
 const output_img_url = "../static/uploads/output.png";
 
-
 // Canvas
 // variables for 2nd canvas
 let canvas = document.getElementById("canvas");
@@ -30,9 +29,7 @@ canvas.width = 290;
 const rect = canvas.getBoundingClientRect();
 var clear_canvas1 = document.getElementById("clear1");
 
-let snapshot;
 var draw_phase = false;
-var radioBtns1 = document.getElementsByName("shape");
 var drag_phase = false;
 let shapes = [];
 let selected_shape = null;
@@ -45,9 +42,7 @@ canvas2.width = 290;
 const rect2 = canvas2.getBoundingClientRect();
 var clear_canvas2 = document.getElementById("clear2");
 
-let snapshot2;
 var draw_phase2 = false;
-var radioBtns2 = document.getElementsByName("shape2");
 var drag_phase2 = false;
 let shapes2 = [];
 let selected_shape2 = null;
@@ -77,7 +72,6 @@ function is_mouse_in_shape(shape) {
     return false;
 }
 
-
 // Drawing shapes
 function drawRect(context) {
     rectWidth = endX - startX;
@@ -87,32 +81,12 @@ function drawRect(context) {
     context.fillRect(startX, startY, rectWidth, rectHeight);
 };
 
-function drawEllipse(context) {
-    context.beginPath();
-    context.fillStyle = "rgb(239, 239, 239, 0.4)";
-    context.ellipse(startX, startY, Math.abs(endX - startX), Math.abs(endY - startY), 0, Math.PI * 2, false);
-    context.stroke();
-    context.fill();
-    context.closePath();
-};
-
-function draw_shapes(index) {
-    if (index == 1) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        for (let shape of shapes) {
-            context.fillStyle = "rgb(239, 239, 239, 0.4)";
-            context.strokeRect(shape.x, shape.y, shape.width, shape.height);
-            context.fillRect(shape.x, shape.y, shape.width, shape.height);
-        }
-    }
-
-    else {
-        context2.clearRect(0, 0, canvas2.width, canvas2.height);
-        for (let shape of shapes2) {
-            context2.fillStyle = "rgb(239, 239, 239, 0.4)";
-            context2.strokeRect(shape.x, shape.y, shape.width, shape.height);
-            context2.fillRect(shape.x, shape.y, shape.width, shape.height);
-        }
+function moveRect(context,list_of_shapes) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    for (let shape of list_of_shapes) {
+        context.fillStyle = "rgb(239, 239, 239, 0.4)";
+        context.strokeRect(shape.x, shape.y, shape.width, shape.height);
+        context.fillRect(shape.x, shape.y, shape.width, shape.height);
     }
 }
 
@@ -129,27 +103,18 @@ canvas.onmousedown = (event) => {
         }
         index++;
     }
-
     if (!drag_phase) {
         draw_phase = true;
-        // snapshot = context.getImageData(0, 0, canvas.width, canvas.height);
     }
 };
 
 canvas.onmousemove = (event) => {
     if (draw_phase) {
-        // context.putImageData(snapshot, 0, 0);
         endX = parseInt(event.clientX - rect.left);
         endY = parseInt(event.clientY - rect.top);
-        if (radioBtns1[0].checked) {
-            context.clearRect(0, 0, 290, 290)
-            drawRect(context);
-        }
-        else if (radioBtns1[1].checked) {
-            drawEllipse(context);
-        }
+        context.clearRect(0, 0, 290, 290)
+        drawRect(context);
     }
-
     if (drag_phase) {
         endX = parseInt(event.clientX - rect.left);
         endY = parseInt(event.clientY - rect.top);
@@ -158,19 +123,13 @@ canvas.onmousemove = (event) => {
         let current_shape = shapes[selected_shape];
         current_shape.x += dx;
         current_shape.y += dy;
-        draw_shapes(1);
+        moveRect(context, shapes);
         startX = endX;
         startY = endY;
     }
 };
 
 canvas.onmouseup = () => {
-    // if (startX == endX || startY == endY) {
-    //     draw_phase = false;
-    //     drag_phase = false;
-    //     return;
-    // }
-
     if (draw_phase) {
         draw_phase = false;
         shapes = []
@@ -208,21 +167,17 @@ canvas2.onmousedown = (event) => {
 
     if (!drag_phase2) {
         draw_phase2 = true;
-        // snapshot2 = context2.getImageData(0, 0, canvas2.width, canvas2.height);
     }
 };
 
 canvas2.onmousemove = (event) => {
     if (draw_phase2) {
-        // context2.putImageData(snapshot2, 0, 0);
         endX = parseInt(event.clientX - rect2.left);
         endY = parseInt(event.clientY - rect2.top);
-        if (radioBtns2[0].checked) {
-            context2.clearRect(0, 0, 290, 290)
-            drawRect(context2);
-        } else {
-            drawEllipse(context2);
-        }
+
+        context2.clearRect(0, 0, 290, 290)
+        drawRect(context2);
+
     }
 
     if (drag_phase2) {
@@ -233,14 +188,13 @@ canvas2.onmousemove = (event) => {
         let current_shape = shapes2[selected_shape2];
         current_shape.x += dx;
         current_shape.y += dy;
-        draw_shapes(2);
+        moveRect(context2, shapes2);
         startX = endX;
         startY = endY;
     }
 };
 
 canvas2.onmouseup = () => {
-
     if (draw_phase2) {
         draw_phase2 = false;
         shapes2 = []
@@ -263,7 +217,6 @@ clear_canvas2.onclick = function () {
 
 
 function sendShapes() {
-
     $.ajax({
         type: "POST",
         contentType: "application/json;charset=utf-8",
@@ -383,7 +336,6 @@ document.getElementById("select2").onchange = function () {
 };
 
 document.getElementById("file1").onchange = function () {
-    // document.getElementById("upload-file").submit();
     var form_data = new FormData($('#upload-file')[0]);
 
     $.ajax({
@@ -400,7 +352,6 @@ document.getElementById("file1").onchange = function () {
 };
 
 document.getElementById("file2").onchange = function () {
-    // document.getElementById("upload-file").submit();
     var form_data = new FormData($('#upload-file2')[0]);
 
     $.ajax({
