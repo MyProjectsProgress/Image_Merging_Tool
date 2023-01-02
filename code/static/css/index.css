@@ -33,7 +33,7 @@ body {
 }
 
 #canvas {
-    background-image: url("../img/coffee.png");
+    background-image: url("");
     background-size: contain;
     background-repeat: no-repeat;
     width: 100%;
@@ -56,7 +56,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 60px;
+    margin-top: 40px;
     margin-left: 12%;
 }
 
@@ -71,8 +71,27 @@ body {
     margin-bottom: -10px;
 }
 
+.select_mode{
+    width: 125px;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    margin-top: 20px;
+    transform: translateX(-30px);
+}
+
+
+.select_mode input{
+    margin-top: 10px;
+}
+
+.select_mode label{
+    margin-top: 10px;
+    margin-left: 5px;
+}
+
+
 .clear_btn {
-    margin-top: 40px;
+    margin-top: 20px;
     width: 110px;
     height: 30px;
     transform: translateX(-30px);

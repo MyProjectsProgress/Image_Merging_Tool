@@ -32,7 +32,7 @@ class input:
         selected_part = list1
         for i in range(selected_part.shape[0]):
             for j in range(selected_part.shape[1]):
-                if not((i < x1 or i > x2) or (j < y1 or j > y2)):
+                if (i < x1 or i > x2) or (j < y1 or j > y2):
                     selected_part[i][j] = 0
         print(selected_part)
         return selected_part
@@ -193,6 +193,7 @@ def Shapes():
             x2 = item["x"] + item["width"]
             y1 = item["y"]
             y2 = item["y"] + item["height"]
+            mode = item["select_mode"]
             left1.append(min(x1, x2))
             right1.append(max(x1, x2))
             top1.append(min(y1, y2))

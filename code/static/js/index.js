@@ -28,11 +28,14 @@ canvas.height = 290;
 canvas.width = 290;
 const rect = canvas.getBoundingClientRect();
 var clear_canvas1 = document.getElementById("clear1");
+var select_mode1 = document.getElementsByName("select1");
+
 
 var draw_phase = false;
 var drag_phase = false;
 let shapes = [];
 let selected_shape = null;
+let mode = "Normal"
 
 // variables for 2nd canvas
 let canvas2 = document.getElementById("canvas2");
@@ -41,11 +44,14 @@ canvas2.height = 290;
 canvas2.width = 290;
 const rect2 = canvas2.getBoundingClientRect();
 var clear_canvas2 = document.getElementById("clear2");
+var select_mode2 = document.getElementsByName("select2");
+
 
 var draw_phase2 = false;
 var drag_phase2 = false;
 let shapes2 = [];
 let selected_shape2 = null;
+let mode2 = "Normal"
 
 // Variables for drawing and moving
 var startX = 0;
@@ -133,11 +139,18 @@ canvas.onmouseup = () => {
     if (draw_phase) {
         draw_phase = false;
         shapes = []
-        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight });
+        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, select_mode: mode });
     }
 
     else {
         drag_phase = false;
+    }
+
+    if (select_mode1[0].checked){
+        mode = "Normal";
+    }
+    else {
+        mode = "Inverse";
     }
 
     sendShapes();
@@ -147,11 +160,18 @@ canvas.onmouseout = () => {
     if (draw_phase) {
         draw_phase = false;
         shapes = []
-        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight });
+        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, select_mode: mode });
     }
 
     else {
         drag_phase = false;
+    }
+
+    if (select_mode1[0].checked){
+        mode = "Normal";
+    }
+    else {
+        mode = "Inverse";
     }
 
     sendShapes();
@@ -164,6 +184,13 @@ clear_canvas1.onclick = function () {
     sendShapes();
 };
 
+select_mode1[0].onchange = () => {
+    sendShapes();
+}
+
+select_mode1[1].onchange = () => {
+    sendShapes();
+}
 
 // Mouse actions for 2nd canvas
 canvas2.onmousedown = (event) => {
@@ -212,12 +239,20 @@ canvas2.onmouseup = () => {
     if (draw_phase2) {
         draw_phase2 = false;
         shapes2 = []
-        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight });
+        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, select_mode: mode2 });
     }
 
     else {
         drag_phase2 = false;
     }
+
+    if (select_mode2[0].checked){
+        mode2 = "Normal";
+    }
+    else {
+        mode2 = "Inverse";
+    }
+
     sendShapes();
 };
 
@@ -225,12 +260,19 @@ canvas2.onmouseout = () => {
     if (draw_phase2) {
         draw_phase2 = false;
         shapes2 = []
-        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight });
+        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, select_mode: mode2 });
     }
-
     else {
         drag_phase2 = false;
     }
+
+    if (select_mode2[0].checked){
+        mode2 = "Normal";
+    }
+    else {
+        mode2 = "Inverse";
+    }
+
     sendShapes();
 };
 
@@ -242,8 +284,18 @@ clear_canvas2.onclick = function () {
     sendShapes();
 };
 
+select_mode2[0].onchange = () => {
+    sendShapes();
+}
 
+select_mode2[1].onchange = () => {
+    sendShapes();
+}
+
+
+// Send selected shape to back-end
 function sendShapes() {
+
     $.ajax({
         type: "POST",
         contentType: "application/json;charset=utf-8",
