@@ -7,29 +7,23 @@ import json
 import os
 from PIL import Image, ImageChops
 
-
 app = Flask(__name__)
-
 
 def scale(image_array):
     image = ((image_array - image_array.min()) * (1/(image_array.max() - image_array.min()) * 255)).astype('uint8')
     return image
-
 
 def fourierFunc(img):
     fourier = np.fft.fft2(img)
     fourierShift = np.fft.fftshift(fourier)
     return fourier, fourierShift
 
-
 def magnitudeSpectrum(fourierShift):
     return 20*np.log(np.abs(fourierShift))
-
 
 def phaseFunc(fourier):
     phase = np.angle(fourier)
     return phase
-
 
 def resizeFunc(img1, img2):
     newImageShape = img1.shape
@@ -37,10 +31,8 @@ def resizeFunc(img1, img2):
     img2 = cv.resize(img2, newImageShape)
     return img2
 
-
 def magnitudeFunc(fourier):
     return np.abs(fourier)
-
 
 def plotFunc(x, s):
 
@@ -56,9 +48,7 @@ def plotFunc(x, s):
 def combine(mag, phase):
     combined = np.multiply(mag, np.exp(1j * phase))
     mixInverse = np.real(np.fft.ifft2(combined))
-
     return mixInverse
-
 
 def processing(path1, path2, mode):
 
@@ -66,6 +56,7 @@ def processing(path1, path2, mode):
     img1 = cv.imread(path1, 0)
     img2 = cv.imread(path2, 0)
     img2 = resizeFunc(img1, img2)
+
     # IMAGE ONE FOURIER
     fourier1, fourierShift1 = fourierFunc(img1)
 
@@ -134,28 +125,22 @@ def processing(path1, path2, mode):
         plotFunc(outputImage, "output")
     else:
         pass
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
-
 @app.route('/image', methods=['GET', 'POST'])
 def upload_file():
-
     file1 = request.files['file']
     Image = file1.save(os.path.join('assets/image.png'))
-
     return []
-
 
 @app.route('/image2', methods=['GET', 'POST'])
 def upload_file2():
-
     file2 = request.files['file']
     Image = file2.save(os.path.join('assets/image2.png'))
-
     return []
-
 
 values1 = ["Uni1"]
 values2 = ["Uni2"]
@@ -178,7 +163,6 @@ def select():
     processing('assets\image.png', 'assets\image2.png', mode)
 
     return []
-
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
