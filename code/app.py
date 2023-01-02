@@ -7,143 +7,139 @@ import json
 import os
 from PIL import Image, ImageChops
 
+
 app = Flask(__name__)
 
-def scale(image_array):
-    image = ((image_array - image_array.min()) * (1/(image_array.max() - image_array.min()) * 255)).astype('uint8')
-    return image
 
-def fourierFunc(img):
-    fourier = np.fft.fft2(img)
-    fourierShift = np.fft.fftshift(fourier)
-    return fourier, fourierShift
+class input:
 
-def magnitudeSpectrum(fourierShift):
-    return 20*np.log(np.abs(fourierShift))
+    def __init__(self, path):
+        self.img_read = cv.imread(path, 0)
+        self.img_shape = self.img_read.shape
 
-def phaseFunc(fourier):
-    phase = np.angle(fourier)
-    return phase
+        self.fourier = np.fft.fft2(self.img_read)
+        self.fourier_shift = np.fft.fftshift(self.fourier)
 
-def resizeFunc(img1, img2):
-    newImageShape = img1.shape
-    newImageShape = (newImageShape[1], newImageShape[0])
-    img2 = cv.resize(img2, newImageShape)
-    return img2
+        self.magnitude = np.abs(self.fourier_shift)
+        self.phase = np.angle(self.fourier_shift)
 
-def magnitudeFunc(fourier):
-    return np.abs(fourier)
+        self.magnitude_spectrum = 20*np.log(np.abs(self.fourier_shift))
+        self.phase_spectrum = ((self.phase - self.phase.min()) *
+                               (1/(self.phase.max() - self.phase.min()) * 255)).astype('uint8')
+        self.scaled_phase = self.scale(self.phase)
 
-def plotFunc(x, s):
+    def partSelect(self, list1, x1, x2, y1, y2):
+        selected_part = list1
+        for i in range(selected_part.shape[0]):
+            for j in range(selected_part.shape[1]):
+                if not((i < x1 or i > x2) or (j < y1 or j > y2)):
+                    selected_part[i][j] = 0
+        print(selected_part)
+        return selected_part
 
-    if(s == "1"):
-        cv.imwrite('static/uploads/1.png', x)
+    def resizeFunc(self, img1, img2):
+        newImageShape = img1.shape
+        newImageShape = (newImageShape[1], newImageShape[0])
+        img2 = cv.resize(img2, newImageShape)
 
-    elif(s == "2"):
-        cv.imwrite('static/uploads/2.png', x)
+        return img2
 
-    elif(s == "output"):
-        cv.imwrite('static/uploads/output.png', x)
+    def scale(self, image_array):
+        image = ((image_array - image_array.min()) *
+                 (1/(image_array.max() - image_array.min()) * 255)).astype('uint8')
+        return image
 
-def combine(mag, phase):
-    combined = np.multiply(mag, np.exp(1j * phase))
-    mixInverse = np.real(np.fft.ifft2(combined))
-    return mixInverse
+    def processing(self, img_2: 'input', mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000, y11=0, y22=6000):
 
-def processing(path1, path2, mode):
+        img_2.img_read = self.resizeFunc(self.img_read, img_2.img_read)
 
-    # READ & RESIZE
-    img1 = cv.imread(path1, 0)
-    img2 = cv.imread(path2, 0)
-    img2 = resizeFunc(img1, img2)
+        magUni = np.ones(self.img_shape)
+        phaseUni = np.zeros(self.img_shape)
 
-    # IMAGE ONE FOURIER
-    fourier1, fourierShift1 = fourierFunc(img1)
+        if(mode == "Mag1-Phase2"):
+            self.magnitude = self.partSelect(self.magnitude, x1, x2, y1, y2)
+            img_2.phase = img_2.partSelect(img_2.phase, x11, x22, y11, y22)
+            self.plot(self.magnitude_spectrum, "1")
+            img_2.plot(img_2.scaled_phase, "2")
+            combined = np.multiply(self.magnitude, np.exp(1j * img_2.phase))
 
-   # IMAGE TWO FOURIER
-    fourier2, fourierShift2 = fourierFunc(img2)
+        elif(mode == "Phase1-Mag2"):
+            self.phase = self.partSelect(self.phase, x1, x2, y1, y2)
+            img_2.magnitude = img_2.partSelect(
+                img_2.magnitude, x11, x22, y11, y22)
+            self.plot(self.scaled_phase, "1")
+            img_2.plot(img_2.magnitude_spectrum, "2")
+            combined = np.multiply(img_2.magnitude, np.exp(1j * self.phase))
 
-    magUni1 = np.ones(img1.shape)
-    magUni2 = np.ones(img2.shape)
-    phaseUni1 = np.zeros(img1.shape)
-    phaseUni2 = np.zeros(img2.shape)
+        elif(mode == "Phase1-Uni2"):
+            self.phase = self.partSelect(self.phase, x1, x2, y1, y2)
+            img_2.magnitude = img_2.partSelect(magUni, x11, x22, y11, y22)
+            self.plot(self.scaled_phase, "1")
+            img_2.plot(img_2.magnitude_spectrum, "2")
+            combined = np.multiply(img_2.magnitude, np.exp(1j * self.phase))
 
-    if(mode == "Mag1-Phase2"):
-        mag1 = magnitudeFunc(fourier1)
-        mag_spectrum = magnitudeSpectrum(fourierShift1)
-        phase2 = phaseFunc(fourier2)
-        phase2Show = scale(phase2)
-        plotFunc(mag_spectrum, "1")
-        plotFunc(phase2Show, "2")
-        outputImage = combine(mag1, phase2)
-        plotFunc(outputImage, "output")
+        elif(mode == "Uni1-Mag2"):
+            self.phase = self.partSelect(phaseUni, x1, x2, y1, y2)
+            img_2.magnitude = img_2.partSelect(
+                img_2.magnitude, x11, x22, y11, y22)
+            self.plot(self.scaled_phase, "1")
+            img_2.plot(img_2.magnitude_spectrum, "2")
+            combined = np.multiply(img_2.magnitude, np.exp(1j * self.phase))
 
-    elif(mode == "Phase1-Mag2"):
-        mag2 = magnitudeFunc(fourier2)
-        mag_spectrum = magnitudeSpectrum(fourierShift2)
-        phase1 = phaseFunc(fourier1)
-        plotFunc(mag_spectrum, "2")
-        phase1Show = scale(phase1)
-        plotFunc(phase1Show, "1")
-        outputImage = combine(mag2, phase1)
-        plotFunc(outputImage, "output")
+        elif(mode == "Uni1-Phase2"):
+            self.magnitude = self.partSelect(magUni, x1, x2, y1, y2)
+            img_2.phase = img_2.partSelect(img_2.phase, x11, x22, y11, y22)
+            self.plot(self.magnitude_spectrum, "1")
+            img_2.plot(img_2.scaled_phase, "2")
+            combined = np.multiply(self.magnitude, np.exp(1j * img_2.phase))
 
-    elif(mode == "Phase1-Uni2"):
-        phase1 = phaseFunc(fourier1)
-        magSpectrum = magnitudeSpectrum(magUni2)
-        plotFunc(magSpectrum, "2")
-        phase1Show = scale(phase1)
-        plotFunc(phase1Show, "1")
-        outputImage = combine(magUni2, phase1)
-        plotFunc(outputImage, "output")
+        elif(mode == "Mag1-Uni2"):
+            self.magnitude = self.partSelect(self.magnitude, x1, x2, y1, y2)
+            img_2.phase = img_2.partSelect(phaseUni, x11, x22, y11, y22)
+            self.plot(self.magnitude_spectrum, "1")
+            img_2.plot(img_2.scaled_phase, "2")
+            combined = np.multiply(self.magnitude, np.exp(1j * img_2.phase))
 
-    elif(mode == "Uni1-Mag2"):
-        mag2 = magnitudeFunc(fourier2)
-        magSpectrum = magnitudeSpectrum(mag2)
-        plotFunc(magSpectrum, "2")
-        phaseUni1Show = scale(phaseUni1)
-        plotFunc(phaseUni1Show, "1")
-        outputImage = combine(mag2, phaseUni1)
-        plotFunc(outputImage, "output")
+        mixInverse = np.real(np.fft.ifft2(combined))
+        self.plot(mixInverse, "output")
 
-    elif(mode == "Uni1-Phase2"):
-        phase2 = phaseFunc(fourier2)
-        magSpectrum = magnitudeSpectrum(magUni1)
-        plotFunc(magSpectrum, "1")
-        phase2Show = scale(phase2)
-        plotFunc(phase2Show, "2")
-        outputImage = combine(magUni1, phase2)
-        plotFunc(outputImage, "output")
+    def plot(self, x, s):
+        if(s == "1"):
+            cv.imwrite('static/uploads/1.png', x)
 
-    elif(mode == "Mag1-Uni2"):
-        mag1 = magnitudeFunc(fourier1)
-        magSpectrum = magnitudeSpectrum(mag1)
-        plotFunc(magSpectrum, "1")
-        phaseUni2Show = scale(phaseUni2)
-        plotFunc(phaseUni2Show, "2")
-        outputImage = combine(mag1, phaseUni2)
-        plotFunc(outputImage, "output")
-    else:
-        pass
+        elif(s == "2"):
+            cv.imwrite('static/uploads/2.png', x)
+
+        elif(s == "output"):
+            cv.imwrite('static/uploads/output.png', x)
+
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
+
 @app.route('/image', methods=['GET', 'POST'])
 def upload_file():
+
     file1 = request.files['file']
     Image = file1.save(os.path.join('assets/image.png'))
+
     return []
+
 
 @app.route('/image2', methods=['GET', 'POST'])
 def upload_file2():
+
     file2 = request.files['file']
     Image = file2.save(os.path.join('assets/image2.png'))
+
     return []
+
 
 values1 = ["Uni1"]
 values2 = ["Uni2"]
+mode = ["Mag1-Uni2"]
 
 
 @app.route('/selected-items', methods=['GET', 'POST'])
@@ -158,11 +154,75 @@ def select():
     if data2 != None:
         values2.append(data2)
 
-    mode = values1[-1]+"-"+values2[-1]
-    print(mode)
-    processing('assets\image.png', 'assets\image2.png', mode)
+    mode.append(values1[-1]+"-"+values2[-1])
+
+    img_1 = input('assets\image.png')
+    img_2 = input('assets\image2.png')
+
+    img_1.processing(img_2, mode[-1])
 
     return []
+
+
+left1 = [0]
+right1 = [6000]
+top1 = [0]
+bottom1 = [6000]
+left2 = [0]
+right2 = [6000]
+top2 = [0]
+bottom2 = [6000]
+
+
+@app.route('/Shapes', methods=['GET', 'POST'])
+def Shapes():
+
+    img_1 = input('assets\image.png')
+    img_2 = input('assets\image2.png')
+    data = request.get_json()
+
+    if(len(data[0]) == 0):
+        left1.append(0)
+        right1.append(6000)
+        top1.append(0)
+        bottom1.append(6000)
+        img_1.processing(img_2, mode[-1])
+    else:
+        for item in data[0]:
+            x1 = item["x"]
+            x2 = item["x"] + item["width"]
+            y1 = item["y"]
+            y2 = item["y"] + item["height"]
+            left1.append(min(x1, x2))
+            right1.append(max(x1, x2))
+            top1.append(min(y1, y2))
+            bottom1.append(max(y1, y2))
+            img_1.processing(img_2, mode[-1], left1[-1], right1[-1], top1[-1],
+                             bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+
+    if(len(data[1]) == 0):
+        left2.append(0)
+        right2.append(6000)
+        top2.append(0)
+        bottom2.append(6000)
+        img_1.processing(img_2, mode[-1], left1[-1], right1[-1], top1[-1],
+                         bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+
+    else:
+        for item in data[1]:
+            x1 = item["x"]
+            x2 = item["x"] + item["width"]
+            y1 = item["y"]
+            y2 = item["y"] + item["height"]
+            left2.append(min(x1, x2))
+            right2.append(max(x1, x2))
+            top2.append(min(y1, y2))
+            bottom2.append(max(y1, y2))
+            img_1.processing(img_2, mode[-1], left1[-1], right1[-1], top1[-1],
+                             bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+
+    return []
+
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

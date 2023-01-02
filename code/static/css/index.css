@@ -7,7 +7,7 @@ body {
 
 .input {
     background: rgb(242, 240, 240);
-    width: 100%;
+    width: 111%;
     height: 290px;
     margin-top: 25px;
     display: flex;
@@ -17,28 +17,13 @@ body {
     margin-left: 20px;
 }
 
-.input select {
-    margin-top: 50px;
-    margin-right: 60px;
-}
-
 .images {
     display: flex;
     flex-direction: row;
 }
 
-#canvas{
-    background-image: url("");
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 100%;
-}
-
-#canvas2{
-    background-image: url("");
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 100%;
+.display {
+    min-width: 290px;
 }
 
 .input .images img {
@@ -47,8 +32,23 @@ body {
     margin-right: 20px;
 }
 
-.display{
-    min-width: 290px;
+#canvas {
+    background-image: url("../img/coffee.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+}
+
+#canvas2 {
+    background-image: url("");
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+}
+
+.input select {
+    margin-top: 50px;
+    margin-right: 60px;
 }
 
 .buttons {
@@ -56,17 +56,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 80px;
+    margin-top: 60px;
     margin-left: 12%;
 }
 
-.shape_btn{
-    margin-top: 30px;
-    transform: translateX(-25px);
-}
-
-.shape_btn input{
-    margin-bottom: 10px;
+.upload_btn {
+    transform: translateX(-30px);
+    width: 91px;
+    margin-bottom: -40px;
 }
 
 .select_menu {
@@ -74,10 +71,11 @@ body {
     margin-bottom: -10px;
 }
 
-.upload_btn {
+.clear_btn {
+    margin-top: 40px;
+    width: 110px;
+    height: 30px;
     transform: translateX(-30px);
-    width: 91px;
-    margin-bottom: -40px;
 }
 
 .output {
