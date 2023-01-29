@@ -33,10 +33,6 @@
                     <option value="Mag1" id="Mag1">Magnitude</option>
                     <option value="Phase1" id="Phase1">Phase</option>
                 </select>
-                <div class="select_mode">
-                    <input type="radio" name="select1" id="" value="" checked><label for="">Normal Select</label>
-                    <input type="radio" name="select1" id="" value=""><label for="">Inverse Select</label>
-                </div>
                 <button id="clear1" class="clear_btn">Clear Selection</button>       
             </div>
         </div>
@@ -57,10 +53,6 @@
                     <option value="Mag2" id="Mag2" >Magnitude</option>
                     <option value="Phase2" id="Phase2" >Phase</option>
                 </select>
-                <div class="select_mode">
-                    <input type="radio" name="select2" id="" value="" checked><label for="">Normal Select</label>
-                    <input type="radio" name="select2" id="" value=""><label for="">Inverse Select</label>
-                </div>
                 <button id="clear2" class="clear_btn">Clear Selection</button>
             </div>
         </div>
@@ -70,6 +62,15 @@
     <div class="output">
         <h3>Output Image</h3>
         <img src="" alt="" id='output'>
+
+        <div class="invert_box">
+            <h3>Inverse select</h3>
+            <label class="invert_button">
+                <input type="checkbox" id="check_box">
+                    <span class="slider"></span>
+            </label>  
+        </div>
+
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="../static/js/index.js"></script>

@@ -56,7 +56,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 40px;
+    margin-top: 50px;
     margin-left: 12%;
 }
 
@@ -71,27 +71,8 @@ body {
     margin-bottom: -10px;
 }
 
-.select_mode{
-    width: 125px;
-    display: grid;
-    grid-template-columns: 20% 80%;
-    margin-top: 20px;
-    transform: translateX(-30px);
-}
-
-
-.select_mode input{
-    margin-top: 10px;
-}
-
-.select_mode label{
-    margin-top: 10px;
-    margin-left: 5px;
-}
-
-
 .clear_btn {
-    margin-top: 20px;
+    margin-top: 60px;
     width: 110px;
     height: 30px;
     transform: translateX(-30px);
@@ -99,10 +80,10 @@ body {
 
 .output {
     margin-left: 50%;
-    transform: translateY(150px);
+    transform: translateY(140px);
     background: rgb(242, 240, 240);
     width: 70%;
-    height: 400px;
+    height: 420px;
     display: flex;
     flex-direction: column;
     padding: 15px;
@@ -115,4 +96,61 @@ body {
 .output img {
     width: 100%;
     height: 80%;
+}
+
+.invert_box{
+}
+
+.invert_box h3{
+    font-size: 22px;
+}
+
+.invert_box{
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+
+.invert_button input{
+    display: none;
+}
+
+.invert_button{
+    position: relative;
+    display: inline-block;
+    width: 55px;
+    height: 30px;
+    transform: translateY(20px);
+}
+
+.slider{
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider::before{
+    position: absolute;
+    content: "";
+    height: 25px;
+    width: 25px;
+    left: 2.5px;
+    bottom: 2.5px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50px;
+}
+
+input:checked + .slider{
+    background-color: #278cff;
+}
+
+input:checked + .slider::before{
+    transform: translateX(25px);
 }
