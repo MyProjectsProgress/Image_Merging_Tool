@@ -28,13 +28,16 @@ class input:
                                (1/(self.phase.max() - self.phase.min()) * 255)).astype('uint8')
         self.scaled_phase = self.scale(self.phase)
 
-    def partSelect(self, list1, x1, x2, y1, y2):
+    def partSelect(self, list1, x1, x2, y1, y2, filterType):
         selected_part = list1
         for i in range(selected_part.shape[0]):
             for j in range(selected_part.shape[1]):
-                if (i < x1 or i > x2) or (j < y1 or j > y2):
-                    selected_part[i][j] = 0
-        print(selected_part)
+                if(filterType == 0):
+                    if ((i < x1 or i > x2) or (j < y1 or j > y2)):
+                        selected_part[i][j] = 0
+                else:
+                    if not((i < x1 or i > x2) or (j < y1 or j > y2)):
+                        selected_part[i][j] = 0
         return selected_part
 
     def resizeFunc(self, img1, img2):
@@ -49,7 +52,7 @@ class input:
                  (1/(image_array.max() - image_array.min()) * 255)).astype('uint8')
         return image
 
-    def processing(self, img_2: 'input', mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000, y11=0, y22=6000):
+    def processing(self, img_2: 'input', mode, x1=0, x2=6000, y1=0, y2=6000, x11=0, x22=6000, y11=0, y22=6000, filterType=0):
 
         img_2.img_read = self.resizeFunc(self.img_read, img_2.img_read)
 
@@ -57,45 +60,53 @@ class input:
         phaseUni = np.zeros(self.img_shape)
 
         if(mode == "Mag1-Phase2"):
-            self.magnitude = self.partSelect(self.magnitude, x1, x2, y1, y2)
-            img_2.phase = img_2.partSelect(img_2.phase, x11, x22, y11, y22)
+            self.magnitude = self.partSelect(
+                self.magnitude, x1, x2, y1, y2, filterType)
+            img_2.phase = img_2.partSelect(
+                img_2.phase, x11, x22, y11, y22, filterType)
             self.plot(self.magnitude_spectrum, "1")
             img_2.plot(img_2.scaled_phase, "2")
             combined = np.multiply(self.magnitude, np.exp(1j * img_2.phase))
 
         elif(mode == "Phase1-Mag2"):
-            self.phase = self.partSelect(self.phase, x1, x2, y1, y2)
+            self.phase = self.partSelect(
+                self.phase, x1, x2, y1, y2, filterType)
             img_2.magnitude = img_2.partSelect(
-                img_2.magnitude, x11, x22, y11, y22)
+                img_2.magnitude, x11, x22, y11, y22, filterType)
             self.plot(self.scaled_phase, "1")
             img_2.plot(img_2.magnitude_spectrum, "2")
             combined = np.multiply(img_2.magnitude, np.exp(1j * self.phase))
 
         elif(mode == "Phase1-Uni2"):
-            self.phase = self.partSelect(self.phase, x1, x2, y1, y2)
-            img_2.magnitude = img_2.partSelect(magUni, x11, x22, y11, y22)
+            self.phase = self.partSelect(self.phase, x1, x2, y1, filterType)
+            img_2.magnitude = img_2.partSelect(
+                magUni, x11, x22, y11, y22, filterType)
             self.plot(self.scaled_phase, "1")
             img_2.plot(img_2.magnitude_spectrum, "2")
             combined = np.multiply(img_2.magnitude, np.exp(1j * self.phase))
 
         elif(mode == "Uni1-Mag2"):
-            self.phase = self.partSelect(phaseUni, x1, x2, y1, y2)
+            self.phase = self.partSelect(phaseUni, x1, x2, y1, y2, filterType)
             img_2.magnitude = img_2.partSelect(
-                img_2.magnitude, x11, x22, y11, y22)
+                img_2.magnitude, x11, x22, y11, y22, filterType)
             self.plot(self.scaled_phase, "1")
             img_2.plot(img_2.magnitude_spectrum, "2")
             combined = np.multiply(img_2.magnitude, np.exp(1j * self.phase))
 
         elif(mode == "Uni1-Phase2"):
-            self.magnitude = self.partSelect(magUni, x1, x2, y1, y2)
-            img_2.phase = img_2.partSelect(img_2.phase, x11, x22, y11, y22)
+            self.magnitude = self.partSelect(
+                magUni, x1, x2, y1, y2, filterType)
+            img_2.phase = img_2.partSelect(
+                img_2.phase, x11, x22, y11, y22, filterType)
             self.plot(self.magnitude_spectrum, "1")
             img_2.plot(img_2.scaled_phase, "2")
             combined = np.multiply(self.magnitude, np.exp(1j * img_2.phase))
 
         elif(mode == "Mag1-Uni2"):
-            self.magnitude = self.partSelect(self.magnitude, x1, x2, y1, y2)
-            img_2.phase = img_2.partSelect(phaseUni, x11, x22, y11, y22)
+            self.magnitude = self.partSelect(
+                self.magnitude, x1, x2, y1, y2, filterType)
+            img_2.phase = img_2.partSelect(
+                phaseUni, x11, x22, y11, y22, filterType)
             self.plot(self.magnitude_spectrum, "1")
             img_2.plot(img_2.scaled_phase, "2")
             combined = np.multiply(self.magnitude, np.exp(1j * img_2.phase))
@@ -117,6 +128,16 @@ class input:
 @app.route('/')
 def home():
     return render_template('index.html')
+
+
+# @app.route('/filterSelection', methods=['GET', 'POST'])
+# def filterSelection():
+#     filterData = request.values.get('filter')
+
+#     filterType.append(filterData)
+#     print(filterType)
+
+#     return []
 
 
 @app.route('/image', methods=['GET', 'POST'])
@@ -172,6 +193,7 @@ left2 = [0]
 right2 = [6000]
 top2 = [0]
 bottom2 = [6000]
+filterType = [0]
 
 
 @app.route('/Shapes', methods=['GET', 'POST'])
@@ -193,13 +215,16 @@ def Shapes():
             x2 = item["x"] + item["width"]
             y1 = item["y"]
             y2 = item["y"] + item["height"]
-            mode = item["select_mode"]
+            filter = item["inverseData"]
+            # mode = item["select_mode"]
+            filterType.append(filter)
+
             left1.append(min(x1, x2))
             right1.append(max(x1, x2))
             top1.append(min(y1, y2))
             bottom1.append(max(y1, y2))
             img_1.processing(img_2, mode[-1], left1[-1], right1[-1], top1[-1],
-                             bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+                             bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1], filterType[-1])
 
     if(len(data[1]) == 0):
         left2.append(0)
@@ -207,7 +232,7 @@ def Shapes():
         top2.append(0)
         bottom2.append(6000)
         img_1.processing(img_2, mode[-1], left1[-1], right1[-1], top1[-1],
-                         bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+                         bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1], filterType[-1])
 
     else:
         for item in data[1]:
@@ -215,12 +240,14 @@ def Shapes():
             x2 = item["x"] + item["width"]
             y1 = item["y"]
             y2 = item["y"] + item["height"]
+            filter = item["inverseData"]
+            filterType.append(filter)
             left2.append(min(x1, x2))
             right2.append(max(x1, x2))
             top2.append(min(y1, y2))
             bottom2.append(max(y1, y2))
             img_1.processing(img_2, mode[-1], left1[-1], right1[-1], top1[-1],
-                             bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1])
+                             bottom1[-1], left2[-1], right2[-1], top2[-1], bottom2[-1], filterType[-1])
 
     return []
 

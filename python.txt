@@ -1,0 +1,10 @@
+@app.route('/generated', methods=['GET', 'POST'])
+def generated():
+    generated=request.values.get("y_point")
+    filterd_point = signal.filtfilt(combined_zeros, combined_poles, generated)
+    
+    
+    
+    
+    
+    return json.dumps({"y_point": filterd_point})

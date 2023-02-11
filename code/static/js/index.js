@@ -8,7 +8,7 @@ var select1_val;
 var select2_val;
 
 var inverse_btn = document.getElementById("check_box");
-var inverse = false;
+var inverse = 0;
 
 Mag2 = document.getElementById("Mag2");
 Phase2 = document.getElementById("Phase2");
@@ -84,7 +84,7 @@ function drawRect(context) {
     context.fillRect(startX, startY, rectWidth, rectHeight);
 };
 
-function moveRect(context,list_of_shapes) {
+function moveRect(context, list_of_shapes) {
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (let shape of list_of_shapes) {
         context.fillStyle = "rgb(239, 239, 239, 0.4)";
@@ -95,12 +95,13 @@ function moveRect(context,list_of_shapes) {
 
 // Inverse Button
 inverse_btn.onchange = () => {
-    if (inverse_btn.checked == true){
-        inverse = true;
+    if (inverse_btn.checked == true) {
+        inverse = 1;
     }
     else {
-        inverse = false;
+        inverse = 0;
     }
+    sendShapes();
 };
 
 
@@ -147,7 +148,7 @@ canvas.onmouseup = () => {
     if (draw_phase) {
         draw_phase = false;
         shapes = []
-        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight});
+        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, inverseData: inverse });
     }
 
     else {
@@ -160,7 +161,7 @@ canvas.onmouseout = () => {
     if (draw_phase) {
         draw_phase = false;
         shapes = []
-        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight});
+        shapes.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, inverseData: inverse });
     }
 
     else {
@@ -223,7 +224,7 @@ canvas2.onmouseup = () => {
     if (draw_phase2) {
         draw_phase2 = false;
         shapes2 = []
-        shapes2.push({x: startX, y: startY, width: rectWidth, height: rectHeight});
+        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, inverseData: inverse });
     }
 
     else {
@@ -237,7 +238,7 @@ canvas2.onmouseout = () => {
     if (draw_phase2) {
         draw_phase2 = false;
         shapes2 = []
-        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight});
+        shapes2.push({ x: startX, y: startY, width: rectWidth, height: rectHeight, inverseData: inverse });
     }
     else {
         drag_phase2 = false;
@@ -248,11 +249,30 @@ canvas2.onmouseout = () => {
 
 // Clear button
 clear_canvas2.onclick = function () {
-    
+
     context2.clearRect(0, 0, canvas2.width, canvas2.height);
     shapes2 = [];
     sendShapes();
 };
+
+// //select filter
+// function filterSelection() {
+//     $.ajax({
+//         type: "POST",
+//         url: "http://127.0.0.1:5000/filterSelection",
+//         data: {
+//             'filter': inverse //  to the GET parameters
+//         },
+//         dataType: 'json',
+//         success: function (result) {
+//             output_img.setAttribute("src", `${output_img_url}?r=${new Date().getTime()}`);
+//         }
+//     });
+// }
+
+
+
+
 
 
 // Send selected shape to back-end
@@ -403,6 +423,7 @@ document.getElementById("file2").onchange = function () {
         processData: false,
         async: true,
         success: function (data) {
+            
         }
     });
 };

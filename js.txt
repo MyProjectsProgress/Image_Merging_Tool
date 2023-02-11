@@ -1,0 +1,11 @@
+$.ajax({
+    url: 'http://127.0.0.1:5000/generated',
+    type: 'POST',
+    data: {
+        'y_point': y_point //  to the GET parameters
+    },
+    dataType: 'json',
+    success: function (response) {
+       
+    }
+})
